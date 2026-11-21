@@ -1,15 +1,27 @@
-*.iml
-.gradle
-/local.properties
-/.idea/caches
-/.idea/libraries
-/.idea/modules.xml
-/.idea/workspace.xml
-/.idea/navEditor.xml
-/.idea/assetWizardSettings.xml
-.DS_Store
-/build
-/captures
-.externalNativeBuild
-.cxx
+# Gradle
+.gradle/
+build/
+
+# Kotlin 2.x compiler session/error files
+.kotlin/
+
+# Local config & secrets (API key, SDK path, signing)
 local.properties
+keystore.properties
+*.jks
+*.keystore
+
+# Android Studio / IntelliJ (code style is shared via .editorconfig, detekt, spotless)
+.idea/
+*.iml
+captures/
+.externalNativeBuild/
+.cxx/
+*.hprof
+
+# Release outputs (Generate Signed Bundle/APK writes here)
+/app/release/
+
+# OS
+.DS_Store
+Thumbs.db
