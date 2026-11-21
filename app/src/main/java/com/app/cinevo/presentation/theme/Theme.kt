@@ -1,54 +1,38 @@
 package com.app.cinevo.presentation.theme
 
-import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.darkColorScheme
-import androidx.compose.material3.dynamicDarkColorScheme
-import androidx.compose.material3.dynamicLightColorScheme
-import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.ReadOnlyComposable
 
-private val DarkColorScheme =
-    darkColorScheme(
-        primary = Purple80,
-        secondary = PurpleGrey80,
-        tertiary = Pink80,
-    )
-
-private val LightColorScheme =
-    lightColorScheme(
-        primary = Purple40,
-        secondary = PurpleGrey40,
-        tertiary = Pink40,
-    )
-
+/**
+ * Cinevo's design system. Dark-first, follows the system dark/light setting, and deliberately does not use
+ * dynamic (wallpaper) color so the brand palette stays consistent across devices.
+ *
+ * System bar icon contrast is handled by `enableEdgeToEdge()` in the activity, which also follows the system
+ * setting, so it always agrees with [darkTheme]'s default.
+ */
 @Composable
 fun CinevoTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
-    dynamicColor: Boolean = true,
     content: @Composable () -> Unit,
 ) {
-    val colorScheme =
-        when {
-            dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
-                val context = LocalContext.current
-                if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
-            }
+    val spacing = CinevoSpacing()
+    CompositionLocalProvider(LocalCinevoSpacing provides spacing) {
+        MaterialTheme(
+            colorScheme = if (darkTheme) CinevoDarkColorScheme else CinevoLightColorScheme,
+            typography = CinevoTypography,
+            shapes = CinevoShapes,
+            content = content,
+        )
+    }
+}
 
-            darkTheme -> {
-                DarkColorScheme
-            }
-
-            else -> {
-                LightColorScheme
-            }
-        }
-
-    MaterialTheme(
-        colorScheme = colorScheme,
-        typography = Typography,
-        content = content,
-    )
+/** Accessors for Cinevo tokens that Material 3 does not model. */
+object CinevoTheme {
+    val spacing: CinevoSpacing
+        @Composable
+        @ReadOnlyComposable
+        get() = LocalCinevoSpacing.current
 }

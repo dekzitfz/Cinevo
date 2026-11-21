@@ -11,7 +11,7 @@ complexity:
     ignoreDefaultParameters: true
     ignoreAnnotated: ['Composable']
   TooManyFunctions:
-    ignoreAnnotatedFunctions: ['Preview']
+    ignoreAnnotatedFunctions: ['Preview', 'PreviewLightDark']
 
 style:
   MagicNumber:
@@ -19,5 +19,5 @@ style:
     ignoreCompanionObjectPropertyDeclaration: true
     excludes: ['**/test/**', '**/androidTest/**', '**/presentation/theme/**']
   UnusedPrivateMember:
-    ignoreAnnotated: ['Preview']
+    ignoreAnnotated: ['Preview', 'PreviewLightDark']
 

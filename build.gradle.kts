@@ -15,13 +15,17 @@ spotless {
     kotlin {
         target("**/*.kt")
         targetExclude("**/build/**")
-        ktlint(ktlintVersion).customRuleSets(
-            listOf(
-                libs.compose.rules.ktlint
-                    .get()
-                    .toString(),
-            ),
-        )
+        ktlint(ktlintVersion)
+            .customRuleSets(
+                listOf(
+                    libs.compose.rules.ktlint
+                        .get()
+                        .toString(),
+                ),
+            ).editorConfigOverride(
+                // Design-system tokens intentionally exposed as CompositionLocals.
+                mapOf("compose_allowed_composition_locals" to "LocalCinevoSpacing"),
+            )
     }
     kotlinGradle {
         target("**/*.gradle.kts")
