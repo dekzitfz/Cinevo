@@ -4,7 +4,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import com.app.cinevo.presentation.designsystem.DesignSystemCatalog
+import com.app.cinevo.presentation.navigation.CinevoNavHost
 import com.app.cinevo.presentation.theme.CinevoTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -17,8 +17,7 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             CinevoTheme {
-                // Placeholder until feature screens land.
-                DesignSystemCatalog()
+                CinevoNavHost()
             }
         }
     }

@@ -1,3 +1,10 @@
 <resources>
     <string name="app_name">Cinevo</string>
+    <string name="navigate_up">Navigate up</string>
+    <string name="retry">Retry</string>
+    <string name="genres_empty">No genres available right now.</string>
+    <string name="error_no_connection">No internet connection. Check your connection and try again.</string>
+    <string name="error_server">TMDB is having trouble right now. Please try again in a moment.</string>
+    <string name="error_unauthorized">Couldn\'t sign in to TMDB. Check that your API key is valid.</string>
+    <string name="error_unknown">Something went wrong. Please try again.</string>
 </resources>

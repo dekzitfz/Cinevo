@@ -21,9 +21,8 @@ All versions live in [`gradle/libs.versions.toml`](gradle/libs.versions.toml).
 Requirements: Android Studio (latest stable), JDK 17+, Android SDK 37.
 
 1. Clone the repository.
-2. Copy `local.properties.example` to `local.properties` (Android Studio usually creates it with `sdk.dir`).
-3. Add your TMDB key (see below).
-4. Build and run: `./gradlew installDebug`
+2. Add your TMDB key to `local.properties`.
+3. Build and run: `./gradlew installDebug`
 
 ### API key
 
@@ -47,7 +46,8 @@ com.app.cinevo
 │   ├── network/         ApiResult, safeApiCall, interceptors
 │   └── ui/              Shared composables
 ├── data/
-│   ├── remote/dto/      API service and DTOs
+│   ├── remote/          TmdbApi (Retrofit service)
+│   │   └── dto/         API DTOs
 │   ├── paging/          PagingSources
 │   ├── mapper/          DTO → domain mappers
 │   └── repository/      Repository implementations

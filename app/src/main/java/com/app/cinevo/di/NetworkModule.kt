@@ -2,6 +2,7 @@ package com.app.cinevo.di
 
 import com.app.cinevo.BuildConfig
 import com.app.cinevo.core.network.AuthInterceptor
+import com.app.cinevo.data.remote.TmdbApi
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -12,6 +13,7 @@ import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.kotlinx.serialization.asConverterFactory
+import retrofit2.create
 import javax.inject.Singleton
 
 @Module
@@ -56,4 +58,8 @@ object NetworkModule {
             .client(okHttpClient)
             .addConverterFactory(json.asConverterFactory("application/json".toMediaType()))
             .build()
+
+    @Provides
+    @Singleton
+    fun provideTmdbApi(retrofit: Retrofit): TmdbApi = retrofit.create()
 }

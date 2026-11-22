@@ -95,5 +95,9 @@ dependencies {
 
     testImplementation(libs.bundles.unit.test)
 
+    androidTestImplementation(platform(libs.androidx.compose.bom))
+    androidTestImplementation(libs.bundles.android.test)
+    debugImplementation(libs.androidx.compose.ui.test.manifest)
+
     detektPlugins(libs.compose.rules.detekt)
 }
