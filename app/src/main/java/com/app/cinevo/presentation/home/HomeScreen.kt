@@ -11,8 +11,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.GridItemSpan
-import androidx.compose.foundation.lazy.grid.LazyGridItemScope
 import androidx.compose.foundation.lazy.grid.LazyGridScope
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
@@ -38,6 +36,7 @@ import com.app.cinevo.core.ui.EmptyView
 import com.app.cinevo.core.ui.ErrorType
 import com.app.cinevo.core.ui.ErrorView
 import com.app.cinevo.core.ui.LoadingView
+import com.app.cinevo.core.ui.fullWidthItem
 import com.app.cinevo.domain.model.Genre
 import com.app.cinevo.domain.model.Movie
 import com.app.cinevo.presentation.theme.CinevoTheme
@@ -136,11 +135,6 @@ private fun LazyGridScope.genresSection(
         }
     }
 }
-
-private fun LazyGridScope.fullWidthItem(
-    key: String,
-    content: @Composable LazyGridItemScope.() -> Unit,
-) = item(key = key, span = { GridItemSpan(maxLineSpan) }, content = content)
 
 @Composable
 private fun SectionTitle(

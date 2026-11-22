@@ -23,9 +23,9 @@ fun CinevoNavHost(
                 onGenreClick = { genreId, genreName -> navController.navigate(MovieList(genreId, genreName)) },
             )
         }
-        composable<MovieList> { backStackEntry ->
+        composable<MovieList> {
             MovieListScreen(
-                genreName = backStackEntry.toRoute<MovieList>().genreName,
+                onMovieClick = { movieId -> navController.navigate(MovieDetail(movieId)) },
                 onBackClick = navController::navigateUp,
             )
         }

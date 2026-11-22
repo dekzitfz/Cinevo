@@ -1,11 +1,9 @@
 package com.app.cinevo.presentation.home
 
-import androidx.annotation.StringRes
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.app.cinevo.R
 import com.app.cinevo.core.network.ApiResult
-import com.app.cinevo.core.ui.ErrorType
+import com.app.cinevo.core.ui.messageRes
 import com.app.cinevo.core.ui.toErrorType
 import com.app.cinevo.domain.usecase.GetGenresUseCase
 import com.app.cinevo.domain.usecase.GetTrendingMoviesUseCase
@@ -71,14 +69,5 @@ class HomeViewModel
                     val type = error.toErrorType()
                     SectionUiState.Error(message = type.messageRes(), type = type)
                 }
-            }
-
-        @StringRes
-        private fun ErrorType.messageRes(): Int =
-            when (this) {
-                ErrorType.NoConnection -> R.string.error_no_connection
-                ErrorType.Server -> R.string.error_server
-                ErrorType.Unauthorized -> R.string.error_unauthorized
-                ErrorType.Unknown -> R.string.error_unknown
             }
     }

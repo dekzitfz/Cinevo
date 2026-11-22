@@ -11,7 +11,7 @@ list of movies for that genre, and open a movie to see its details, user reviews
 - Retrofit, OkHttp, kotlinx.serialization
 - Paging 3
 - Coil 3
-- JUnit 4, MockK, Turbine, MockWebServer, kotlinx-coroutines-test
+- JUnit 4, MockK, Turbine, MockWebServer, kotlinx-coroutines-test, Paging testing, Robolectric
 - Detekt, Spotless (ktlint)
 
 All versions live in [`gradle/libs.versions.toml`](gradle/libs.versions.toml).

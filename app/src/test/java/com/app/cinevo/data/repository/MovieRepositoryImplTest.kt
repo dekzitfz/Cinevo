@@ -1,6 +1,8 @@
 package com.app.cinevo.data.repository
 
+import androidx.paging.testing.asSnapshot
 import com.app.cinevo.core.network.ApiError
+import com.app.cinevo.core.network.ApiException
 import com.app.cinevo.core.network.ApiResult
 import com.app.cinevo.data.remote.TmdbApi
 import com.app.cinevo.di.NetworkModule
@@ -147,6 +149,42 @@ class MovieRepositoryImplTest {
 
     @Test
     fun `trending unreachable server returns Network error`() = assertNoNetwork { repository.getTrendingMovies() }
+
+    @Test
+    fun `movies by genre requests discover with genre, page and filters until the last page`() =
+        runTest {
+            server.enqueue(MockResponse(body = discoverPage(page = 1, totalPages = 2, id = 550)))
+            server.enqueue(MockResponse(body = discoverPage(page = 2, totalPages = 2, id = 603)))
+
+            val movies = repository.getMoviesByGenre(genreId = 28).asSnapshot { appendScrollWhile { true } }
+
+            assertEquals(listOf(550, 603), movies.map { it.id })
+            assertEquals(2, server.requestCount)
+            listOf("1", "2").forEach { page ->
+                val url = server.takeRequest().url
+                assertEquals("/discover/movie", url.encodedPath)
+                assertEquals("28", url.queryParameter("with_genres"))
+                assertEquals(page, url.queryParameter("page"))
+                assertEquals("popularity.desc", url.queryParameter("sort_by"))
+                assertEquals("false", url.queryParameter("include_adult"))
+            }
+        }
+
+    @Test
+    fun `movies by genre 401 fails with a typed Http error`() =
+        runTest {
+            server.enqueue(MockResponse(code = 401, body = """{"status_message":"Invalid API key"}"""))
+
+            val error = runCatching { repository.getMoviesByGenre(genreId = 28).asSnapshot() }.exceptionOrNull()
+
+            assertEquals(ApiError.Http(401), (error as ApiException).error)
+        }
+
+    private fun discoverPage(
+        page: Int,
+        totalPages: Int,
+        id: Int,
+    ) = """{"page":$page,"results":[{"id":$id,"title":"Movie $id"}],"total_pages":$totalPages,"total_results":2}"""
 
     private fun assertHttpError(
         code: Int,
