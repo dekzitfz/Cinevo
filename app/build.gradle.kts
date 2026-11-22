@@ -40,10 +40,13 @@ android {
 
     buildTypes {
         release {
+            // R8 code shrinking, obfuscation and optimization plus resource shrinking, using the default Android
+            // keep rules, the rules bundled with each library and src/main/keepRules.
             optimization {
                 enable = true
-                packageScope = setOf("androidx.**", "kotlin.**", "kotlinx.**")
             }
+            // Debug signing keeps the release build installable for review; use a real keystore for distribution.
+            signingConfig = signingConfigs.getByName("debug")
         }
     }
     compileOptions {
@@ -59,6 +62,11 @@ android {
 detekt {
     buildUponDefaultConfig = true
     config.setFrom(rootProject.file("config/detekt/detekt.yml"))
+}
+
+tasks.withType<Test>().configureEach {
+    // MockK's agent appends to the boot class path, which makes the JVM warn about class data sharing on every run.
+    jvmArgs("-Xshare:off")
 }
 
 tasks.withType<Detekt>().configureEach {
@@ -78,7 +86,6 @@ dependencies {
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.lifecycle.runtime.compose)
-    implementation(libs.androidx.lifecycle.viewmodel.compose)
     implementation(libs.androidx.navigation.compose)
 
     implementation(platform(libs.androidx.compose.bom))
@@ -90,7 +97,7 @@ dependencies {
     implementation(libs.androidx.hilt.lifecycle.viewmodel.compose)
 
     implementation(libs.bundles.network)
-    implementation(libs.bundles.paging)
+    implementation(libs.androidx.paging.compose)
     implementation(libs.bundles.coil)
     implementation(libs.youtube.player)
 

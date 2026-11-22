@@ -3,9 +3,10 @@ package com.app.cinevo.presentation.home
 import androidx.activity.ComponentActivity
 import androidx.annotation.StringRes
 import androidx.compose.ui.semantics.ProgressBarRangeInfo
+import androidx.compose.ui.test.assertHasClickAction
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.hasProgressBarRangeInfo
-import androidx.compose.ui.test.junit4.createAndroidComposeRule
+import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
@@ -27,8 +28,8 @@ class HomeScreenTest {
 
     private val movies =
         listOf(
-            Movie(550, "Fight Club", null, null, 8.4, "1999-10-15"),
-            Movie(603, "The Matrix", null, null, 8.2, "1999-03-31"),
+            Movie(550, "Fight Club", null, 8.4),
+            Movie(603, "The Matrix", null, 8.2),
         )
     private val genres = listOf(Genre(28, "Action"), Genre(35, "Comedy"))
     private val networkError = SectionUiState.Error(R.string.error_no_connection, ErrorType.NoConnection)
@@ -55,7 +56,11 @@ class HomeScreenTest {
 
         composeRule.onNodeWithText(string(R.string.trending_title)).assertIsDisplayed()
         composeRule.onNodeWithText("Fight Club").assertIsDisplayed()
-        composeRule.onNodeWithText(composeRule.activity.getString(R.string.movie_rating, 8.4)).assertIsDisplayed()
+        composeRule
+            .onNodeWithContentDescription(
+                composeRule.activity.getString(R.string.movie_card_description, "Fight Club", 8.4),
+            ).assertIsDisplayed()
+            .assertHasClickAction()
         composeRule.onNodeWithText(string(R.string.genres_title)).assertIsDisplayed()
         composeRule.onNodeWithText("Action").assertIsDisplayed()
     }

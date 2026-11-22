@@ -8,7 +8,9 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyGridScope
+import androidx.compose.foundation.lazy.grid.LazyGridState
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
@@ -21,6 +23,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.heading
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
@@ -76,7 +80,14 @@ fun MovieListScreen(
         modifier = modifier,
         topBar = {
             TopAppBar(
-                title = { Text(text = genreName, maxLines = 1, overflow = TextOverflow.Ellipsis) },
+                title = {
+                    Text(
+                        text = genreName,
+                        modifier = Modifier.semantics { heading() },
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                    )
+                },
                 navigationIcon = {
                     IconButton(onClick = onBackClick) {
                         Icon(
@@ -88,6 +99,9 @@ fun MovieListScreen(
             )
         },
     ) { innerPadding ->
+        // Hoisted above the loading/content switch: after rotation the paged list is briefly empty while the cached
+        // pages are re-delivered, and a grid created inside the switch would come back scrolled to the top.
+        val gridState = rememberLazyGridState()
         val spacing = CinevoTheme.spacing
         val layoutDirection = LocalLayoutDirection.current
         // The top inset is applied to the refresh box so its indicator appears below the app bar. The other insets
@@ -104,7 +118,12 @@ fun MovieListScreen(
             onRefresh = movies::refresh,
             modifier = Modifier.fillMaxSize().padding(top = innerPadding.calculateTopPadding()),
         ) {
-            MovieListContent(movies = movies, onMovieClick = onMovieClick, contentPadding = contentPadding)
+            MovieListContent(
+                movies = movies,
+                gridState = gridState,
+                onMovieClick = onMovieClick,
+                contentPadding = contentPadding,
+            )
         }
     }
 }
@@ -113,6 +132,7 @@ fun MovieListScreen(
 @Composable
 private fun MovieListContent(
     movies: LazyPagingItems<Movie>,
+    gridState: LazyGridState,
     onMovieClick: (movieId: Int) -> Unit,
     contentPadding: PaddingValues,
 ) {
@@ -127,7 +147,12 @@ private fun MovieListContent(
         }
 
         movies.itemCount > 0 -> {
-            MovieGrid(movies = movies, onMovieClick = onMovieClick, contentPadding = contentPadding)
+            MovieGrid(
+                movies = movies,
+                gridState = gridState,
+                onMovieClick = onMovieClick,
+                contentPadding = contentPadding,
+            )
         }
 
         refresh is LoadState.Loading -> {
@@ -147,11 +172,12 @@ private fun MovieListContent(
 @Composable
 private fun MovieGrid(
     movies: LazyPagingItems<Movie>,
+    gridState: LazyGridState,
     onMovieClick: (movieId: Int) -> Unit,
     contentPadding: PaddingValues,
     modifier: Modifier = Modifier,
 ) {
-    PosterGrid(contentPadding = contentPadding, modifier = modifier) {
+    PosterGrid(contentPadding = contentPadding, modifier = modifier, state = gridState) {
         items(count = movies.itemCount, key = movies.itemKey { it.id }) { index ->
             movies[index]?.let { movie -> MoviePosterCard(movie = movie, onClick = { onMovieClick(movie.id) }) }
         }
@@ -177,12 +203,14 @@ private fun MovieGrid(
 private fun PosterGrid(
     contentPadding: PaddingValues,
     modifier: Modifier = Modifier,
+    state: LazyGridState = rememberLazyGridState(),
     userScrollEnabled: Boolean = true,
     content: LazyGridScope.() -> Unit,
 ) {
     LazyVerticalGrid(
         columns = GridCells.Adaptive(minSize = 150.dp),
         modifier = modifier.fillMaxSize(),
+        state = state,
         contentPadding = contentPadding,
         horizontalArrangement = Arrangement.spacedBy(CinevoTheme.spacing.sm),
         verticalArrangement = Arrangement.spacedBy(CinevoTheme.spacing.md),
@@ -193,10 +221,10 @@ private fun PosterGrid(
 
 private val PreviewMovies =
     listOf(
-        Movie(1, "The Long Night", null, null, 8.4, "2026-10-02"),
-        Movie(2, "Paper Harbor", null, null, 7.1, "2026-09-18"),
-        Movie(3, "A Very Long Title That Wraps Onto Two Lines", null, null, 6.6, null),
-        Movie(4, "Echoes", null, null, 7.9, "2026-11-01"),
+        Movie(1, "The Long Night", null, 8.4),
+        Movie(2, "Paper Harbor", null, 7.1),
+        Movie(3, "A Very Long Title That Wraps Onto Two Lines", null, 6.6),
+        Movie(4, "Echoes", null, 7.9),
     )
 
 private val PreviewError = LoadState.Error(ApiException(ApiError.Network))

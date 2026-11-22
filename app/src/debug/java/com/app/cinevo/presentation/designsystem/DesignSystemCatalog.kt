@@ -19,7 +19,6 @@ import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -49,7 +48,8 @@ private val SampleGenres =
 
 /**
  * Developer catalog of the Cinevo design system: color roles, type scale, shapes, spacing and genre gradients.
- * Edge-to-edge aware: content is padded by the safe-drawing insets so it clears the system bars and cutouts.
+ * Viewed through its preview in Android Studio; it lives in the debug source set so it never ships, which is also
+ * why its labels are not string resources.
  */
 @Composable
 fun DesignSystemCatalog(modifier: Modifier = Modifier) {

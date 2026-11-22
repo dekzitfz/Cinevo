@@ -27,7 +27,7 @@ class HomeViewModelTest {
 
     private val getTrendingMovies: GetTrendingMoviesUseCase = mockk()
     private val getGenres: GetGenresUseCase = mockk()
-    private val movies = listOf(Movie(550, "Fight Club", "/poster.jpg", null, 8.4, "1999-10-15"))
+    private val movies = listOf(Movie(550, "Fight Club", "/poster.jpg", 8.4))
     private val genres = listOf(Genre(28, "Action"), Genre(12, "Adventure"))
     private val serverError = SectionUiState.Error(R.string.error_server, ErrorType.Server)
     private val networkError = SectionUiState.Error(R.string.error_no_connection, ErrorType.NoConnection)

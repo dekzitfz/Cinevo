@@ -31,7 +31,6 @@ data class VideoDto(
     val key: String,
     val site: String,
     val type: String,
-    val name: String = "",
     val official: Boolean = false,
     @SerialName("published_at") val publishedAt: String? = null,
 )

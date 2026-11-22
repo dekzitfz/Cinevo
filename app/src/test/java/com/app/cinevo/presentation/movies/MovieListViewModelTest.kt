@@ -34,23 +34,12 @@ class MovieListViewModelTest {
     private val getMoviesByGenre: GetMoviesByGenreUseCase = mockk()
     private val movies =
         listOf(
-            Movie(550, "Fight Club", "/poster.jpg", null, 8.4, "1999-10-15"),
-            Movie(603, "The Matrix", null, null, 8.2, "1999-03-31"),
+            Movie(550, "Fight Club", "/poster.jpg", 8.4),
+            Movie(603, "The Matrix", null, 8.2),
         )
     private val page =
         PagedResponseDto(
-            page = 1,
-            results =
-                movies.map {
-                    MovieDto(
-                        it.id,
-                        it.title,
-                        it.posterPath,
-                        it.backdropPath,
-                        it.voteAverage,
-                        it.releaseDate,
-                    )
-                },
+            results = movies.map { MovieDto(it.id, it.title, it.posterPath, it.voteAverage) },
             totalPages = 1,
             totalResults = movies.size,
         )

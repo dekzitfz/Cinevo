@@ -1,6 +1,5 @@
 package com.app.cinevo.presentation.home
 
-import androidx.annotation.StringRes
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -26,6 +25,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.heading
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
@@ -36,6 +37,7 @@ import com.app.cinevo.core.ui.EmptyView
 import com.app.cinevo.core.ui.ErrorType
 import com.app.cinevo.core.ui.ErrorView
 import com.app.cinevo.core.ui.LoadingView
+import com.app.cinevo.core.ui.SectionTitle
 import com.app.cinevo.core.ui.fullWidthItem
 import com.app.cinevo.domain.model.Genre
 import com.app.cinevo.domain.model.Movie
@@ -71,7 +73,13 @@ fun HomeScreen(
 ) {
     Scaffold(
         modifier = modifier,
-        topBar = { TopAppBar(title = { Text(text = stringResource(R.string.app_name)) }) },
+        topBar = {
+            TopAppBar(
+                title = {
+                    Text(text = stringResource(R.string.app_name), modifier = Modifier.semantics { heading() })
+                },
+            )
+        },
     ) { innerPadding ->
         val spacing = CinevoTheme.spacing
         val layoutDirection = LocalLayoutDirection.current
@@ -131,19 +139,6 @@ private fun LazyGridScope.genresSection(
 }
 
 @Composable
-private fun SectionTitle(
-    @StringRes text: Int,
-    modifier: Modifier = Modifier,
-) {
-    Text(
-        text = stringResource(text),
-        modifier = modifier.padding(top = CinevoTheme.spacing.xs),
-        style = MaterialTheme.typography.titleLarge,
-        color = MaterialTheme.colorScheme.onBackground,
-    )
-}
-
-@Composable
 private fun GenreCard(
     genre: Genre,
     onClick: () -> Unit,
@@ -174,10 +169,10 @@ private fun GenreCard(
 
 private val PreviewMovies =
     listOf(
-        Movie(1, "The Long Night", null, null, 8.4, "2026-10-02"),
-        Movie(2, "Paper Harbor", null, null, 7.1, "2026-09-18"),
-        Movie(3, "A Very Long Title That Wraps Onto Two Lines", null, null, 6.6, null),
-        Movie(4, "Echoes", null, null, 7.9, "2026-11-01"),
+        Movie(1, "The Long Night", null, 8.4),
+        Movie(2, "Paper Harbor", null, 7.1),
+        Movie(3, "A Very Long Title That Wraps Onto Two Lines", null, 6.6),
+        Movie(4, "Echoes", null, 7.9),
     )
 
 private val PreviewGenres =

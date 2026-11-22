@@ -10,6 +10,30 @@
     <string name="movies_empty">No movies found for this genre</string>
     <string name="movies_load_more_error">Couldn\'t load more movies.</string>
     <string name="movie_rating">★ %1$.1f</string>
+    <string name="movie_card_description">%1$s, rated %2$.1f out of 10</string>
+    <string name="movie_card_open">open details</string>
+    <string name="movie_poster_description">Poster for %1$s</string>
+    <string name="rating_description">Rated %1$.1f out of 10</string>
+    <plurals name="movie_rating_description">
+        <item quantity="one">Rated %1$.1f out of 10 from %2$s vote</item>
+        <item quantity="other">Rated %1$.1f out of 10 from %2$s votes</item>
+    </plurals>
+    <!-- Joins the release year and runtime on the detail screen, such as "1999 · 2h 19m". -->
+    <string name="movie_facts_separator">" · "</string>
+    <!-- Joins the same facts when read aloud, such as "1999, 2 hours 19 minutes". -->
+    <string name="movie_facts_description_separator">", "</string>
+    <string name="runtime_hours_minutes">%1$dh %2$dm</string>
+    <string name="runtime_hours">%1$dh</string>
+    <string name="runtime_minutes">%1$dm</string>
+    <string name="duration_hours_minutes">%1$s %2$s</string>
+    <plurals name="duration_hours">
+        <item quantity="one">%1$d hour</item>
+        <item quantity="other">%1$d hours</item>
+    </plurals>
+    <plurals name="duration_minutes">
+        <item quantity="one">%1$d minute</item>
+        <item quantity="other">%1$d minutes</item>
+    </plurals>
     <string name="movie_not_found">Movie not found.</string>
     <plurals name="movie_vote_count">
         <item quantity="one">%1$s vote</item>

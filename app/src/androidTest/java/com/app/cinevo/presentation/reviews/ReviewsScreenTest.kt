@@ -2,9 +2,11 @@ package com.app.cinevo.presentation.reviews
 
 import androidx.activity.ComponentActivity
 import androidx.annotation.StringRes
+import androidx.compose.runtime.remember
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.hasText
+import androidx.compose.ui.test.junit4.StateRestorationTester
 import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
@@ -19,6 +21,7 @@ import com.app.cinevo.data.remote.dto.PagedResponseDto
 import com.app.cinevo.data.remote.dto.ReviewDto
 import com.app.cinevo.presentation.theme.CinevoTheme
 import kotlinx.coroutines.awaitCancellation
+import kotlinx.coroutines.delay
 import org.junit.Assert.assertEquals
 import org.junit.Rule
 import org.junit.Test
@@ -124,11 +127,42 @@ class ReviewsScreenTest {
         composeRule.onNodeWithText(string(R.string.reviews_load_more_error)).assertDoesNotExist()
     }
 
+    @Test
+    fun expandedReview_staysExpandedAfterStateRestorationWithFreshlyLoadedPages() {
+        val restorationTester = StateRestorationTester(composeRule)
+        restorationTester.setContent {
+            // remember (not rememberSaveable): restoration builds a new pager that loads again, as a new ViewModel
+            // does after process death. The delay keeps the loading skeleton up for a while, like a real request.
+            val reviews =
+                remember {
+                    pager {
+                        delay(NETWORK_DELAY_MS)
+                        page(it, totalPages = 1, review("a", content = longContent))
+                    }
+                }
+            CinevoTheme {
+                ReviewsScreen(movieTitle = "Fight Club", reviews = reviews.collectAsLazyPagingItems(), onBackClick = {})
+            }
+        }
+        waitForText(string(R.string.reviews_read_more))
+        composeRule.onNodeWithText(string(R.string.reviews_read_more)).performClick()
+        composeRule.onNodeWithText(string(R.string.reviews_show_less)).assertIsDisplayed()
+
+        restorationTester.emulateSavedInstanceStateRestore()
+
+        waitForText(string(R.string.reviews_show_less))
+        composeRule.onNodeWithText(string(R.string.reviews_read_more)).assertDoesNotExist()
+    }
+
+    private companion object {
+        const val NETWORK_DELAY_MS = 500L
+    }
+
+    private fun pager(fetchPage: suspend (page: Int) -> PagedResponseDto<ReviewDto>) =
+        Pager(PagingConfig(pageSize = 20, enablePlaceholders = false)) { ReviewPagingSource(fetchPage) }.flow
+
     private fun setContent(fetchPage: suspend (page: Int) -> PagedResponseDto<ReviewDto>) {
-        val reviews =
-            Pager(
-                PagingConfig(pageSize = 20, enablePlaceholders = false),
-            ) { ReviewPagingSource(fetchPage) }.flow
+        val reviews = pager(fetchPage)
         composeRule.setContent {
             CinevoTheme {
                 ReviewsScreen(
@@ -144,7 +178,7 @@ class ReviewsScreenTest {
         page: Int,
         totalPages: Int,
         vararg reviews: ReviewDto,
-    ) = PagedResponseDto(page = page, results = reviews.toList(), totalPages = totalPages, totalResults = reviews.size)
+    ) = PagedResponseDto(results = reviews.toList(), totalPages = totalPages, totalResults = reviews.size)
 
     private fun review(
         id: String,

@@ -35,7 +35,6 @@ fun MovieDetailDto.toDomain(): MovieDetail =
 fun VideoDto.toDomain(): Video =
     Video(
         key = key,
-        name = name,
         site = site,
         type = type,
         official = official,

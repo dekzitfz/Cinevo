@@ -2,13 +2,17 @@ package com.app.cinevo.presentation.movies
 
 import androidx.activity.ComponentActivity
 import androidx.annotation.StringRes
+import androidx.compose.runtime.remember
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.hasScrollToIndexAction
 import androidx.compose.ui.test.hasText
+import androidx.compose.ui.test.junit4.StateRestorationTester
 import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performScrollToIndex
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.compose.collectAsLazyPagingItems
@@ -19,6 +23,7 @@ import com.app.cinevo.data.remote.dto.MovieDto
 import com.app.cinevo.data.remote.dto.PagedResponseDto
 import com.app.cinevo.presentation.theme.CinevoTheme
 import kotlinx.coroutines.awaitCancellation
+import kotlinx.coroutines.delay
 import okhttp3.ResponseBody.Companion.toResponseBody
 import org.junit.Assert.assertEquals
 import org.junit.Rule
@@ -122,11 +127,48 @@ class MovieListScreenTest {
         composeRule.onNodeWithText(string(R.string.movies_load_more_error)).assertDoesNotExist()
     }
 
+    @Test
+    fun scrollPosition_survivesStateRestorationWithFreshlyLoadedPages() {
+        val ids = (1..40).toList().toIntArray()
+        val restorationTester = StateRestorationTester(composeRule)
+        restorationTester.setContent {
+            // remember (not rememberSaveable): restoration builds a new pager that loads again, as a new ViewModel
+            // does after process death. The delay keeps the loading skeleton up for a while, like a real request.
+            val movies =
+                remember {
+                    pager {
+                        delay(NETWORK_DELAY_MS)
+                        page(it, totalPages = 1, *ids)
+                    }
+                }
+            CinevoTheme {
+                MovieListScreen(
+                    genreName = "Action",
+                    movies = movies.collectAsLazyPagingItems(),
+                    onMovieClick = {},
+                    onBackClick = {},
+                )
+            }
+        }
+        waitForText("Movie 1")
+        composeRule.onNode(hasScrollToIndexAction()).performScrollToIndex(30)
+        composeRule.onNodeWithText("Movie 31").assertIsDisplayed()
+
+        restorationTester.emulateSavedInstanceStateRestore()
+
+        waitForText("Movie 31")
+        composeRule.onNodeWithText("Movie 31").assertIsDisplayed()
+    }
+
+    private companion object {
+        const val NETWORK_DELAY_MS = 500L
+    }
+
+    private fun pager(fetchPage: suspend (page: Int) -> PagedResponseDto<MovieDto>) =
+        Pager(PagingConfig(pageSize = 20, enablePlaceholders = false)) { MoviePagingSource(fetchPage) }.flow
+
     private fun setContent(fetchPage: suspend (page: Int) -> PagedResponseDto<MovieDto>) {
-        val movies =
-            Pager(
-                PagingConfig(pageSize = 20, enablePlaceholders = false),
-            ) { MoviePagingSource(fetchPage) }.flow
+        val movies = pager(fetchPage)
         composeRule.setContent {
             CinevoTheme {
                 MovieListScreen(
@@ -144,7 +186,6 @@ class MovieListScreenTest {
         totalPages: Int,
         vararg ids: Int,
     ) = PagedResponseDto(
-        page = page,
         results = ids.map { MovieDto(id = it, title = "Movie $it") },
         totalPages = totalPages,
         totalResults = ids.size,

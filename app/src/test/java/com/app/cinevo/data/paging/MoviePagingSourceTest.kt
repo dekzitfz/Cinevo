@@ -186,7 +186,7 @@ class MoviePagingSourceTest {
 
     private fun httpException(code: Int) = HttpException(Response.error<Unit>(code, "{}".toResponseBody()))
 
-    private fun movie(id: Int) = Movie(id, "Movie $id", "/$id.jpg", null, 7.5, "2026-01-01")
+    private fun movie(id: Int) = Movie(id, "Movie $id", "/$id.jpg", 7.5)
 
     private fun pageJson(
         page: Int,

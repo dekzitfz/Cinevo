@@ -1,12 +1,19 @@
-# Add project specific R8 rules here.
-# AGP will combine all keep rule files in src/main/keepRules to pass to R8
+# Project keep rules for the release build (R8 full mode).
 #
-# For more details, see
-#   https://d.android.com/r/tools/r8/keep-rules
+# Retrofit, OkHttp, kotlinx.serialization, Hilt/Dagger, Navigation, Coil and the YouTube player ship their own
+# consumer rules, and AGP adds the default Android rules. This file only covers what is specific to Cinevo.
 
-# If your project uses WebView with JS, uncomment the following
-# and specify the fully qualified class name to the JavaScript interface
-# class:
-#-keepclassmembers class fqcn.of.javascript.interface.for.webview {
-#   public *;
-#}
+# Readable release stack traces: keep line numbers and map them back with build/outputs/mapping/release/mapping.txt.
+-keepattributes SourceFile,LineNumberTable
+-renamesourcefileattribute SourceFile
+
+# Retrofit hands the generic return type of each TmdbApi method, such as PagedResponseDto<MovieDto>, to the
+# kotlinx.serialization converter, which looks the serializer up reflectively through the class's Companion.
+# Keep the generic signatures that lookup reads, and keep every DTO (it may still be renamed) so that a type
+# reachable only through a TmdbApi signature is never removed.
+-keepattributes Signature,InnerClasses,EnclosingMethod
+-keep,allowobfuscation @kotlinx.serialization.Serializable class com.app.cinevo.data.remote.dto.**
+
+# The service interface is only created reflectively by Retrofit.create(). Keep its methods and their
+# annotations; the names can still be shortened.
+-keep,allowobfuscation interface com.app.cinevo.data.remote.TmdbApi { *; }

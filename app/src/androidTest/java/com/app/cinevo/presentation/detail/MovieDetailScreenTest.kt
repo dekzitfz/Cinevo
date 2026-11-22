@@ -44,7 +44,7 @@ class MovieDetailScreenTest {
             voteAverage = 8.4,
             voteCount = 1,
             genres = listOf(Genre(18, "Drama"), Genre(53, "Thriller")),
-            trailer = Video("yt123", "Official Trailer", "YouTube", "Trailer", true, null),
+            trailer = Video("yt123", "YouTube", "Trailer", true, null),
             reviews =
                 listOf(
                     Review("r1", "Jane Doe", null, 9.0, "Loved every minute.", reviewDate),
@@ -63,8 +63,8 @@ class MovieDetailScreenTest {
 
         composeRule.onNodeWithText("Fight Club").assertIsDisplayed()
         composeRule.onNodeWithText("1999 · 2h 19m").assertIsDisplayed()
-        composeRule.onNodeWithText(string(R.string.movie_rating, 8.4)).assertIsDisplayed()
-        composeRule.onNodeWithText("1 vote").assertIsDisplayed()
+        composeRule.onNodeWithContentDescription("1999, 2 hours 19 minutes").assertIsDisplayed()
+        composeRule.onNodeWithContentDescription("Rated 8.4 out of 10 from 1 vote").assertIsDisplayed()
         composeRule.onNodeWithText("Drama").assertIsDisplayed()
         composeRule.onNodeWithText("Mischief. Mayhem. Soap.").performScrollTo().assertIsDisplayed()
         composeRule.onNodeWithText(overview).performScrollTo().assertIsDisplayed()
@@ -74,6 +74,7 @@ class MovieDetailScreenTest {
         composeRule.onNodeWithText("JD").performScrollTo().assertIsDisplayed()
         composeRule.onNodeWithText(formatDate(reviewDate)).performScrollTo().assertIsDisplayed()
         composeRule.onNodeWithText(string(R.string.movie_rating, 9.0)).performScrollTo().assertIsDisplayed()
+        composeRule.onNodeWithContentDescription(string(R.string.rating_description, 9.0)).assertIsDisplayed()
         composeRule.onNodeWithText("moviebuff").performScrollTo().assertIsDisplayed()
         composeRule.onNodeWithText(string(R.string.trailer_unavailable)).assertDoesNotExist()
         composeRule.onNodeWithText(string(R.string.reviews_empty)).assertDoesNotExist()

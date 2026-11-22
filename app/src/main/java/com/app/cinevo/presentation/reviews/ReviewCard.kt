@@ -27,6 +27,9 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.hideFromAccessibility
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
@@ -114,8 +117,10 @@ private fun ReviewHeader(
             }
         }
         review.rating?.let {
+            val description = stringResource(R.string.rating_description, it)
             Text(
                 text = stringResource(R.string.movie_rating, it),
+                modifier = Modifier.semantics { contentDescription = description },
                 style = MaterialTheme.typography.labelLarge,
                 color = MaterialTheme.colorScheme.primary,
             )
@@ -148,7 +153,7 @@ private fun ExpandableReviewText(
     }
 }
 
-/** The author's initials, covered by their avatar once it loads. */
+/** The author's initials, covered by their avatar once it loads. Silent for screen readers: the name follows. */
 @Composable
 private fun Avatar(
     name: String,
@@ -161,6 +166,7 @@ private fun Avatar(
     ) {
         Text(
             text = initialsOf(name),
+            modifier = Modifier.semantics { hideFromAccessibility() },
             style = MaterialTheme.typography.labelLarge,
             color = MaterialTheme.colorScheme.onPrimaryContainer,
         )

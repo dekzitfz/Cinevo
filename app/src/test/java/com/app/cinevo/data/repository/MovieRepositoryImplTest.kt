@@ -118,8 +118,8 @@ class MovieRepositoryImplTest {
             assertEquals(
                 ApiResult.Success(
                     listOf(
-                        Movie(550, "Fight Club", "/poster.jpg", "/backdrop.jpg", 8.4, "1999-10-15"),
-                        Movie(551, "No Art", null, null, 6.0, null),
+                        Movie(550, "Fight Club", "/poster.jpg", 8.4),
+                        Movie(551, "No Art", null, 6.0),
                     ),
                 ),
                 result,

@@ -29,6 +29,8 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextOverflow
@@ -40,7 +42,10 @@ import com.app.cinevo.core.image.TmdbImageUrl
 import com.app.cinevo.domain.model.Movie
 import com.app.cinevo.presentation.theme.CinevoTheme
 
-/** Poster with rating badge and title below. Fills the width it is given; the poster keeps a 2:3 ratio. */
+/**
+ * Poster with rating badge and title below. Fills the width it is given; the poster keeps a 2:3 ratio.
+ * Screen readers read it as one button, such as "Fight Club, rated 8.4 out of 10".
+ */
 @Composable
 fun MoviePosterCard(
     movie: Movie,
@@ -48,8 +53,16 @@ fun MoviePosterCard(
     modifier: Modifier = Modifier,
 ) {
     val placeholder = painterResource(R.drawable.ic_poster_placeholder)
+    val description = stringResource(R.string.movie_card_description, movie.title, movie.voteAverage)
     Column(
-        modifier = modifier.clip(MaterialTheme.shapes.medium).clickable(onClick = onClick),
+        modifier =
+            modifier
+                .clip(MaterialTheme.shapes.medium)
+                .clickable(
+                    onClickLabel = stringResource(R.string.movie_card_open),
+                    role = Role.Button,
+                    onClick = onClick,
+                ).semantics { contentDescription = description },
         verticalArrangement = Arrangement.spacedBy(CinevoTheme.spacing.xs),
     ) {
         Box {
@@ -126,7 +139,8 @@ private fun RatingBadge(
     modifier: Modifier = Modifier,
 ) {
     Surface(
-        modifier = modifier,
+        // The card's description already says the rating in words; "★" alone reads poorly aloud.
+        modifier = modifier.clearAndSetSemantics {},
         shape = MaterialTheme.shapes.small,
         color = MaterialTheme.colorScheme.primary,
         contentColor = MaterialTheme.colorScheme.onPrimary,
@@ -145,7 +159,7 @@ private fun Modifier.posterFrame(
     background: Color,
 ): Modifier = fillMaxWidth().aspectRatio(ratio = 2f / 3f).clip(shape).background(background)
 
-private val PreviewMovie = Movie(1, "A Very Long Title That Wraps Onto Two Lines", null, null, 7.6, null)
+private val PreviewMovie = Movie(1, "A Very Long Title That Wraps Onto Two Lines", null, 7.6)
 
 @PreviewLightDark
 @Composable

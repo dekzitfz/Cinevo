@@ -1,7 +1,7 @@
 package com.app.cinevo.presentation.detail
 
-import androidx.annotation.StringRes
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -18,24 +18,19 @@ import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Card
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.key
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -47,8 +42,11 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.clearAndSetSemantics
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.heading
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontStyle
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
@@ -59,6 +57,7 @@ import com.app.cinevo.core.image.TmdbImageUrl
 import com.app.cinevo.core.ui.EmptyView
 import com.app.cinevo.core.ui.ErrorView
 import com.app.cinevo.core.ui.LoadingView
+import com.app.cinevo.core.ui.SectionTitle
 import com.app.cinevo.domain.model.Genre
 import com.app.cinevo.domain.model.MovieDetail
 import com.app.cinevo.domain.model.Review
@@ -101,6 +100,9 @@ fun MovieDetailScreen(
     modifier: Modifier = Modifier,
     trailerPlayer: @Composable (videoKey: String) -> Unit = { YouTubeTrailerPlayer(videoKey = it) },
 ) {
+    // Hoisted above the state switch so the scroll position is restored even when the screen comes back from
+    // process death through Loading before the content reappears.
+    val scrollState = rememberScrollState()
     Surface(modifier = modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
         Box {
             val statusModifier = Modifier.windowInsetsPadding(WindowInsets.safeDrawing)
@@ -122,6 +124,7 @@ fun MovieDetailScreen(
                     val movie = uiState.movie
                     MovieDetailContent(
                         movie = movie,
+                        scrollState = scrollState,
                         onSeeAllReviewsClick = { onSeeAllReviewsClick(movie.id, movie.title) },
                         trailerPlayer = trailerPlayer,
                     )
@@ -142,6 +145,7 @@ fun MovieDetailScreen(
 @Composable
 private fun MovieDetailContent(
     movie: MovieDetail,
+    scrollState: ScrollState,
     onSeeAllReviewsClick: () -> Unit,
     trailerPlayer: @Composable (videoKey: String) -> Unit,
     modifier: Modifier = Modifier,
@@ -152,7 +156,7 @@ private fun MovieDetailContent(
         modifier =
             modifier
                 .fillMaxSize()
-                .verticalScroll(rememberScrollState())
+                .verticalScroll(scrollState)
                 .windowInsetsPadding(WindowInsets.navigationBars.only(WindowInsetsSides.Bottom))
                 .padding(bottom = spacing.lg),
     ) {
@@ -219,7 +223,7 @@ private fun DetailHeader(
             val placeholder = painterResource(R.drawable.ic_poster_placeholder)
             AsyncImage(
                 model = TmdbImageUrl.poster(movie.posterPath),
-                contentDescription = null,
+                contentDescription = stringResource(R.string.movie_poster_description, movie.title),
                 modifier =
                     Modifier
                         .width(PosterWidth)
@@ -235,30 +239,52 @@ private fun DetailHeader(
                 modifier = Modifier.weight(1f),
                 verticalArrangement = Arrangement.spacedBy(spacing.xxs),
             ) {
-                Text(text = movie.title, style = MaterialTheme.typography.headlineSmall)
-                val facts =
-                    listOfNotNull(movie.releaseDate?.year?.toString(), movie.runtimeMinutes?.let(::formatRuntime))
-                if (facts.isNotEmpty()) {
-                    Text(
-                        text = facts.joinToString(separator = " · "),
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = colors.onSurfaceVariant,
-                    )
-                }
+                Text(
+                    text = movie.title,
+                    modifier = Modifier.semantics { heading() },
+                    style = MaterialTheme.typography.headlineSmall,
+                )
+                Facts(year = movie.releaseDate?.year, runtimeMinutes = movie.runtimeMinutes)
                 Rating(voteAverage = movie.voteAverage, voteCount = movie.voteCount)
             }
         }
     }
 }
 
+/** Release year and runtime, such as "1999 · 2h 19m". Draws nothing when both are unknown. */
+@Composable
+private fun Facts(
+    year: Int?,
+    runtimeMinutes: Int?,
+    modifier: Modifier = Modifier,
+) {
+    val runtime = runtimeMinutes?.let(::runtimeOf)
+    val yearText = year?.toString()
+    val facts = listOfNotNull(yearText, runtime?.let { runtimeText(it) })
+    if (facts.isEmpty()) return
+    val description = listOfNotNull(yearText, runtime?.let { runtimeDescription(it) })
+    val descriptionSeparator = stringResource(R.string.movie_facts_description_separator)
+    Text(
+        text = facts.joinToString(separator = stringResource(R.string.movie_facts_separator)),
+        modifier =
+            modifier.semantics { contentDescription = description.joinToString(separator = descriptionSeparator) },
+        style = MaterialTheme.typography.bodyMedium,
+        color = MaterialTheme.colorScheme.onSurfaceVariant,
+    )
+}
+
+/** Average rating and vote count, read aloud as one phrase such as "Rated 8.4 out of 10 from 1,234 votes". */
 @Composable
 private fun Rating(
     voteAverage: Double,
     voteCount: Int,
     modifier: Modifier = Modifier,
 ) {
+    val formattedCount = NumberFormat.getIntegerInstance().format(voteCount)
+    val description =
+        pluralStringResource(R.plurals.movie_rating_description, voteCount, voteAverage, formattedCount)
     Row(
-        modifier = modifier,
+        modifier = modifier.clearAndSetSemantics { contentDescription = description },
         horizontalArrangement = Arrangement.spacedBy(CinevoTheme.spacing.xs),
         verticalAlignment = Alignment.CenterVertically,
     ) {
@@ -268,12 +294,7 @@ private fun Rating(
             color = MaterialTheme.colorScheme.primary,
         )
         Text(
-            text =
-                pluralStringResource(
-                    R.plurals.movie_vote_count,
-                    voteCount,
-                    NumberFormat.getIntegerInstance().format(voteCount),
-                ),
+            text = pluralStringResource(R.plurals.movie_vote_count, voteCount, formattedCount),
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.primary,
         )
@@ -349,18 +370,6 @@ private fun TrailerSection(
     }
 }
 
-@Composable
-internal fun SectionTitle(
-    @StringRes text: Int,
-    modifier: Modifier = Modifier,
-) {
-    Text(
-        text = stringResource(text),
-        modifier = modifier.padding(top = CinevoTheme.spacing.xs),
-        style = MaterialTheme.typography.titleLarge,
-    )
-}
-
 /** Stays readable over both the backdrop and the plain background. */
 @Composable
 private fun BackButton(
@@ -398,7 +407,7 @@ private val PreviewMovie =
         voteAverage = 8.4,
         voteCount = 12_345,
         genres = listOf(Genre(53, "Thriller"), Genre(18, "Drama"), Genre(9648, "Mystery")),
-        trailer = Video("abc123", "Official Trailer", "YouTube", "Trailer", true, null),
+        trailer = Video("abc123", "YouTube", "Trailer", true, null),
         reviews =
             listOf(
                 Review(

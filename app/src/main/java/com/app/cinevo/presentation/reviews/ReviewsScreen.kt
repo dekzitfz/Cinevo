@@ -9,6 +9,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
+import androidx.compose.foundation.lazy.LazyListState
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -22,6 +24,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.heading
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
@@ -73,7 +77,7 @@ fun ReviewsScreen(
         topBar = {
             TopAppBar(
                 title = {
-                    Column {
+                    Column(modifier = Modifier.semantics(mergeDescendants = true) { heading() }) {
                         Text(text = stringResource(R.string.reviews_title))
                         Text(
                             text = movieTitle,
@@ -95,6 +99,9 @@ fun ReviewsScreen(
             )
         },
     ) { innerPadding ->
+        // Hoisted above the loading/content switch for the same reason as on the movie list: the list must keep its
+        // scroll position across rotation while the cached pages are re-delivered.
+        val listState = rememberLazyListState()
         val spacing = CinevoTheme.spacing
         val layoutDirection = LocalLayoutDirection.current
         // As on the movie list: the top inset goes on the refresh box so its indicator appears below the app bar,
@@ -111,7 +118,7 @@ fun ReviewsScreen(
             onRefresh = reviews::refresh,
             modifier = Modifier.fillMaxSize().padding(top = innerPadding.calculateTopPadding()),
         ) {
-            ReviewsContent(reviews = reviews, contentPadding = contentPadding)
+            ReviewsContent(reviews = reviews, listState = listState, contentPadding = contentPadding)
         }
     }
 }
@@ -120,6 +127,7 @@ fun ReviewsScreen(
 @Composable
 private fun ReviewsContent(
     reviews: LazyPagingItems<Review>,
+    listState: LazyListState,
     contentPadding: PaddingValues,
 ) {
     val refresh = reviews.loadState.refresh
@@ -133,7 +141,7 @@ private fun ReviewsContent(
         }
 
         reviews.itemCount > 0 -> {
-            ReviewList(reviews = reviews, contentPadding = contentPadding)
+            ReviewList(reviews = reviews, listState = listState, contentPadding = contentPadding)
         }
 
         refresh is LoadState.Loading -> {
@@ -153,10 +161,11 @@ private fun ReviewsContent(
 @Composable
 private fun ReviewList(
     reviews: LazyPagingItems<Review>,
+    listState: LazyListState,
     contentPadding: PaddingValues,
     modifier: Modifier = Modifier,
 ) {
-    ReviewColumn(contentPadding = contentPadding, modifier = modifier) {
+    ReviewColumn(contentPadding = contentPadding, modifier = modifier, state = listState) {
         items(count = reviews.itemCount, key = reviews.itemKey { it.id }) { index ->
             reviews[index]?.let { review -> ReviewCard(review = review, expandable = true) }
         }
@@ -183,11 +192,13 @@ private fun ReviewList(
 private fun ReviewColumn(
     contentPadding: PaddingValues,
     modifier: Modifier = Modifier,
+    state: LazyListState = rememberLazyListState(),
     userScrollEnabled: Boolean = true,
     content: LazyListScope.() -> Unit,
 ) {
     LazyColumn(
         modifier = modifier.fillMaxSize(),
+        state = state,
         contentPadding = contentPadding,
         verticalArrangement = Arrangement.spacedBy(CinevoTheme.spacing.md),
         userScrollEnabled = userScrollEnabled,

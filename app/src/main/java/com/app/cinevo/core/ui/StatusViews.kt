@@ -16,6 +16,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.LiveRegionMode
+import androidx.compose.ui.semantics.liveRegion
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
 import com.app.cinevo.R
 import com.app.cinevo.presentation.theme.CinevoTheme
@@ -62,7 +65,7 @@ fun InlineErrorView(
             text = message,
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
-            modifier = Modifier.weight(1f),
+            modifier = Modifier.weight(1f).semantics { liveRegion = LiveRegionMode.Polite },
         )
         TextButton(onClick = onRetry) { Text(text = stringResource(R.string.retry)) }
     }
@@ -81,6 +84,8 @@ private fun StatusMessage(
     ) {
         Text(
             text = message,
+            // Announced when it appears, so screen reader users learn that loading failed or found nothing.
+            modifier = Modifier.semantics { liveRegion = LiveRegionMode.Polite },
             style = MaterialTheme.typography.bodyLarge,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             textAlign = TextAlign.Center,

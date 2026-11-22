@@ -12,7 +12,7 @@ class TrailerSelectionTest {
         official: Boolean = false,
         site: String = "YouTube",
         publishedAt: String? = "2024-01-01T00:00:00Z",
-    ) = Video(key, "Video $key", site, type, official, publishedAt?.let(Instant::parse))
+    ) = Video(key, site, type, official, publishedAt?.let(Instant::parse))
 
     @Test
     fun `prefers an official trailer over newer unofficial trailers and teasers`() {

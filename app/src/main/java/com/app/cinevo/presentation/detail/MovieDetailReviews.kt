@@ -11,6 +11,7 @@ import androidx.compose.runtime.key
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import com.app.cinevo.R
+import com.app.cinevo.core.ui.SectionTitle
 import com.app.cinevo.domain.model.Review
 import com.app.cinevo.presentation.reviews.ReviewCard
 import com.app.cinevo.presentation.theme.CinevoTheme

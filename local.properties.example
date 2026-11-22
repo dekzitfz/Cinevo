@@ -1,0 +1,9 @@
+# Copy this file to local.properties (which is gitignored) and fill in the values.
+# Android Studio writes sdk.dir for you when it opens the project.
+
+# Path to your Android SDK.
+sdk.dir=/path/to/Android/sdk
+
+# TMDB "API Read Access Token" (the long v4 token, not the short v3 API key).
+# Get it from https://www.themoviedb.org/settings/api
+TMDB_API_KEY=your_tmdb_api_read_access_token

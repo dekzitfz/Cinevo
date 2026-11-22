@@ -44,15 +44,8 @@ class MovieDetailMapperTest {
             videos =
                 VideoListDto(
                     listOf(
-                        VideoDto("teaser", "YouTube", "Teaser", "Teaser", true, "2019-01-01T00:00:00.000Z"),
-                        VideoDto(
-                            "trailer",
-                            "YouTube",
-                            "Trailer",
-                            "Official Trailer",
-                            true,
-                            "2018-01-01T00:00:00.000Z",
-                        ),
+                        VideoDto("teaser", "YouTube", "Teaser", true, "2019-01-01T00:00:00.000Z"),
+                        VideoDto("trailer", "YouTube", "Trailer", true, "2018-01-01T00:00:00.000Z"),
                     ),
                 ),
             reviews =
@@ -87,7 +80,6 @@ class MovieDetailMapperTest {
             trailer =
                 Video(
                     key = "trailer",
-                    name = "Official Trailer",
                     site = "YouTube",
                     type = "Trailer",
                     official = true,

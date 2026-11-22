@@ -18,6 +18,8 @@ style:
     ignorePropertyDeclaration: true
     ignoreCompanionObjectPropertyDeclaration: true
     excludes: ['**/test/**', '**/androidTest/**', '**/presentation/theme/**']
+  UnusedImports:
+    active: true
   UnusedPrivateMember:
     ignoreAnnotated: ['Preview', 'PreviewLightDark']
 
