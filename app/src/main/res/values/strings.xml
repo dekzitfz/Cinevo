@@ -11,7 +11,19 @@
     <string name="movies_empty">No movies found for this genre</string>
     <string name="movies_load_more_error">Couldn\'t load more movies.</string>
     <string name="movie_rating">★ %1$.1f</string>
-    <string name="movie_detail_placeholder">Movie #%1$d</string>
+    <string name="movie_not_found">Movie not found.</string>
+    <plurals name="movie_vote_count">
+        <item quantity="one">%1$s vote</item>
+        <item quantity="other">%1$s votes</item>
+    </plurals>
+    <string name="trailer_title">Trailer</string>
+    <string name="trailer_unavailable">No trailer available</string>
+    <string name="trailer_open_in_youtube">Open in YouTube</string>
+    <string name="trailer_no_app">No app can play this video.</string>
+    <string name="reviews_title">Reviews</string>
+    <string name="reviews_empty">No reviews yet</string>
+    <string name="reviews_see_all">See all reviews (%1$d)</string>
+    <string name="reviews_placeholder">All reviews for %1$s</string>
     <string name="error_no_connection">No internet connection. Check your connection and try again.</string>
     <string name="error_server">TMDB is having trouble right now. Please try again in a moment.</string>
     <string name="error_unauthorized">Couldn\'t sign in to TMDB. Check that your API key is valid.</string>

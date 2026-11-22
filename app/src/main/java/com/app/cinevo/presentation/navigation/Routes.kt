@@ -15,3 +15,9 @@ data class MovieList(
 data class MovieDetail(
     val movieId: Int,
 )
+
+@Serializable
+data class Reviews(
+    val movieId: Int,
+    val movieTitle: String,
+)

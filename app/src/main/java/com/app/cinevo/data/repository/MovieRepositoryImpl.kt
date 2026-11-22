@@ -10,6 +10,7 @@ import com.app.cinevo.data.paging.MoviePagingSource
 import com.app.cinevo.data.remote.TmdbApi
 import com.app.cinevo.domain.model.Genre
 import com.app.cinevo.domain.model.Movie
+import com.app.cinevo.domain.model.MovieDetail
 import com.app.cinevo.domain.repository.MovieRepository
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
@@ -29,6 +30,9 @@ class MovieRepositoryImpl
             Pager(config = PagingConfig(pageSize = TMDB_PAGE_SIZE, enablePlaceholders = false)) {
                 MoviePagingSource { page -> api.discoverMovies(genreId = genreId, page = page) }
             }.flow
+
+        override suspend fun getMovieDetail(movieId: Int): ApiResult<MovieDetail> =
+            safeApiCall { api.getMovieDetail(movieId).toDomain() }
 
         private companion object {
             const val TMDB_PAGE_SIZE = 20

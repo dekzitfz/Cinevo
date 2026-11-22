@@ -180,6 +180,75 @@ class MovieRepositoryImplTest {
             assertEquals(ApiError.Http(401), (error as ApiException).error)
         }
 
+    @Test
+    fun `movie detail 200 requests videos and reviews in one call and maps them`() =
+        runTest {
+            server.enqueue(
+                MockResponse(
+                    body =
+                        """
+                        {"id":550,"title":"Fight Club","tagline":"","overview":"An insomniac...","runtime":139,
+                         "poster_path":"/poster.jpg","backdrop_path":null,"release_date":"1999-10-15",
+                         "vote_average":8.4,"vote_count":30000,"genres":[{"id":18,"name":"Drama"}],
+                         "videos":{"results":[
+                           {"key":"vimeo","site":"Vimeo","type":"Trailer","name":"T","official":true},
+                           {"key":"yt","site":"YouTube","type":"Trailer","name":"Official Trailer","official":true,
+                            "published_at":"2018-01-01T00:00:00.000Z"}
+                         ]},
+                         "reviews":{"page":1,"total_results":1,"results":[
+                           {"id":"r1","author":"Jane","content":"Great.","created_at":"2020-05-01T10:15:30.123Z",
+                            "url":"https://www.themoviedb.org/review/r1",
+                            "author_details":{"rating":null,"avatar_path":"/https://secure.gravatar.com/a.jpg"}}
+                         ]}}
+                        """.trimIndent(),
+                ),
+            )
+
+            val movie = (repository.getMovieDetail(550) as ApiResult.Success).data
+
+            assertEquals("Fight Club", movie.title)
+            assertNull(movie.tagline)
+            assertNull(movie.backdropPath)
+            assertEquals(139, movie.runtimeMinutes)
+            assertEquals(listOf(Genre(18, "Drama")), movie.genres)
+            assertEquals("yt", movie.trailer?.key)
+            assertEquals("https://secure.gravatar.com/a.jpg", movie.reviews.single().avatarUrl)
+            assertEquals(1, movie.totalReviews)
+            val url = server.takeRequest().url
+            assertEquals("/movie/550", url.encodedPath)
+            assertEquals("videos,reviews", url.queryParameter("append_to_response"))
+        }
+
+    @Test
+    fun `movie detail without videos or reviews has no trailer and no reviews`() =
+        runTest {
+            server.enqueue(MockResponse(body = """{"id":550,"title":"Fight Club"}"""))
+
+            val movie = (repository.getMovieDetail(550) as ApiResult.Success).data
+
+            assertNull(movie.trailer)
+            assertEquals(emptyList<Any>(), movie.reviews)
+            assertEquals(0, movie.totalReviews)
+        }
+
+    @Test
+    fun `movie detail 404 returns Http error`() = assertHttpError(404) { repository.getMovieDetail(550) }
+
+    @Test
+    fun `movie detail 401 returns Http error`() = assertHttpError(401) { repository.getMovieDetail(550) }
+
+    @Test
+    fun `movie detail 500 returns Http error`() = assertHttpError(500) { repository.getMovieDetail(550) }
+
+    @Test
+    fun `movie detail malformed json returns Unknown error`() =
+        assertMalformedJson("""{"id":550,"title":"Fight Club","videos":{"results":[{"key":1}""") {
+            repository.getMovieDetail(550)
+        }
+
+    @Test
+    fun `movie detail unreachable server returns Network error`() = assertNoNetwork { repository.getMovieDetail(550) }
+
     private fun discoverPage(
         page: Int,
         totalPages: Int,

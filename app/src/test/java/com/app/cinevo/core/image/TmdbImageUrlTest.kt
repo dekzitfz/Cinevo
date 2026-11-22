@@ -16,9 +16,15 @@ class TmdbImageUrlTest {
     }
 
     @Test
+    fun `builds a w185 profile url`() {
+        assertEquals("https://image.tmdb.org/t/p/w185/avatar.jpg", TmdbImageUrl.profile("/avatar.jpg"))
+    }
+
+    @Test
     fun `returns null for a null path`() {
         assertNull(TmdbImageUrl.poster(null))
         assertNull(TmdbImageUrl.backdrop(null))
+        assertNull(TmdbImageUrl.profile(null))
     }
 
     @Test

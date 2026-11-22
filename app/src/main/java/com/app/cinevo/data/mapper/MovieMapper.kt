@@ -14,4 +14,4 @@ fun MovieDto.toDomain(): Movie =
         releaseDate = releaseDate.nullIfBlank(),
     )
 
-private fun String?.nullIfBlank(): String? = this?.takeIf { it.isNotBlank() }
+internal fun String?.nullIfBlank(): String? = this?.takeIf { it.isNotBlank() }

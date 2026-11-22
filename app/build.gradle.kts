@@ -92,6 +92,7 @@ dependencies {
     implementation(libs.bundles.network)
     implementation(libs.bundles.paging)
     implementation(libs.bundles.coil)
+    implementation(libs.youtube.player)
 
     testImplementation(libs.bundles.unit.test)
 
