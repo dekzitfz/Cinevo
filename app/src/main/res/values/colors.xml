@@ -2,4 +2,6 @@
 <resources>
   <!-- Window background shown before Compose draws; mirrors CinevoTheme's background color. -->
   <color name="cinevo_window_background">#FFF7F7FA</color>
+  <!-- Poster placeholder icon; mirrors CinevoTheme's onSurfaceVariant. -->
+  <color name="cinevo_poster_placeholder">#FF4A4B55</color>
 </resources>

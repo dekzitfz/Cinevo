@@ -43,6 +43,7 @@ Clean Architecture with MVVM in the presentation layer, in a single `app` module
 com.app.cinevo
 ├── di/                  Hilt modules
 ├── core/
+│   ├── image/           TMDB image URL builder
 │   ├── network/         ApiResult, safeApiCall, interceptors
 │   └── ui/              Shared composables
 ├── data/
@@ -57,7 +58,7 @@ com.app.cinevo
 │   └── usecase/         Use cases
 └── presentation/
     ├── navigation/      Type-safe nav graph
-    ├── genres/          Genre list screen
+    ├── home/            Home screen: trending movies and genres
     ├── movies/          Movies-by-genre screen
     ├── detail/          Movie detail screen
     └── theme/           Material 3 theme
