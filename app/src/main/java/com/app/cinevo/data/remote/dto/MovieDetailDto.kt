@@ -18,7 +18,7 @@ data class MovieDetailDto(
     @SerialName("vote_count") val voteCount: Int = 0,
     val genres: List<GenreDto> = emptyList(),
     val videos: VideoListDto = VideoListDto(),
-    val reviews: ReviewPageDto = ReviewPageDto(),
+    val reviews: PagedResponseDto<ReviewDto> = PagedResponseDto(),
 )
 
 @Serializable
@@ -37,19 +37,12 @@ data class VideoDto(
 )
 
 @Serializable
-data class ReviewPageDto(
-    val results: List<ReviewDto> = emptyList(),
-    @SerialName("total_results") val totalResults: Int = 0,
-)
-
-@Serializable
 data class ReviewDto(
     val id: String,
     val author: String,
     @SerialName("author_details") val authorDetails: AuthorDetailsDto? = null,
     val content: String,
     @SerialName("created_at") val createdAt: String? = null,
-    val url: String? = null,
 )
 
 @Serializable

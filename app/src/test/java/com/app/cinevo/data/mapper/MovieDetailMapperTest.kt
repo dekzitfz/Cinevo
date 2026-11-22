@@ -3,8 +3,8 @@ package com.app.cinevo.data.mapper
 import com.app.cinevo.data.remote.dto.AuthorDetailsDto
 import com.app.cinevo.data.remote.dto.GenreDto
 import com.app.cinevo.data.remote.dto.MovieDetailDto
+import com.app.cinevo.data.remote.dto.PagedResponseDto
 import com.app.cinevo.data.remote.dto.ReviewDto
-import com.app.cinevo.data.remote.dto.ReviewPageDto
 import com.app.cinevo.data.remote.dto.VideoDto
 import com.app.cinevo.data.remote.dto.VideoListDto
 import com.app.cinevo.domain.model.Genre
@@ -56,7 +56,7 @@ class MovieDetailMapperTest {
                     ),
                 ),
             reviews =
-                ReviewPageDto(
+                PagedResponseDto(
                     results =
                         listOf(
                             ReviewDto(
@@ -65,7 +65,6 @@ class MovieDetailMapperTest {
                                 authorDetails = AuthorDetailsDto(rating = 9.0, avatarPath = "/jane.jpg"),
                                 content = "Great.",
                                 createdAt = "2020-05-01T10:15:30.123Z",
-                                url = "https://www.themoviedb.org/review/r1",
                             ),
                         ),
                     totalResults = 12,
@@ -103,7 +102,6 @@ class MovieDetailMapperTest {
                         rating = 9.0,
                         content = "Great.",
                         createdAt = Instant.parse("2020-05-01T10:15:30.123Z"),
-                        url = "https://www.themoviedb.org/review/r1",
                     ),
                 ),
             totalReviews = 12,
@@ -151,7 +149,7 @@ class MovieDetailMapperTest {
     fun `review without author details or dates maps to nulls`() {
         val review = ReviewDto(id = "r1", author = "Jane", content = "Great.", createdAt = "not a date").toDomain()
 
-        assertEquals(Review("r1", "Jane", null, null, "Great.", null, null), review)
+        assertEquals(Review("r1", "Jane", null, null, "Great.", null), review)
     }
 
     @Test
@@ -202,7 +200,7 @@ class MovieDetailMapperTest {
             MovieDetailDto(
                 id = 1,
                 title = "Popular",
-                reviews = ReviewPageDto(results = (1..5).map { review("r$it") }, totalResults = 42),
+                reviews = PagedResponseDto(results = (1..5).map { review("r$it") }, totalResults = 42),
             ).toDomain()
 
         assertEquals(listOf("r1", "r2", "r3"), movie.reviews.map { it.id })

@@ -410,9 +410,8 @@ private val PreviewMovie =
                         "Tense from the first frame to the last. The sound design alone makes this worth seeing " +
                             "on the biggest screen you can find, and the final act lands every beat it set up.",
                     createdAt = Instant.parse("2026-10-05T12:00:00Z"),
-                    url = null,
                 ),
-                Review("r2", "moviebuff", null, null, "Slow start, great payoff.", null, null),
+                Review("r2", "moviebuff", null, null, "Slow start, great payoff.", null),
             ),
         totalReviews = 24,
     )

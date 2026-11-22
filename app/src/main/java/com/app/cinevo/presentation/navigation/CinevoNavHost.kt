@@ -6,7 +6,6 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import androidx.navigation.toRoute
 import com.app.cinevo.presentation.detail.MovieDetailScreen
 import com.app.cinevo.presentation.home.HomeScreen
 import com.app.cinevo.presentation.movies.MovieListScreen
@@ -36,11 +35,8 @@ fun CinevoNavHost(
                 onSeeAllReviewsClick = { movieId, movieTitle -> navController.navigate(Reviews(movieId, movieTitle)) },
             )
         }
-        composable<Reviews> { backStackEntry ->
-            ReviewsScreen(
-                movieTitle = backStackEntry.toRoute<Reviews>().movieTitle,
-                onBackClick = navController::navigateUp,
-            )
+        composable<Reviews> {
+            ReviewsScreen(onBackClick = navController::navigateUp)
         }
     }
 }

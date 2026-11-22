@@ -15,6 +15,7 @@ import com.app.cinevo.domain.model.Genre
 import com.app.cinevo.domain.model.MovieDetail
 import com.app.cinevo.domain.model.Review
 import com.app.cinevo.domain.model.Video
+import com.app.cinevo.presentation.reviews.formatDate
 import com.app.cinevo.presentation.theme.CinevoTheme
 import org.junit.Assert.assertEquals
 import org.junit.Rule
@@ -46,8 +47,8 @@ class MovieDetailScreenTest {
             trailer = Video("yt123", "Official Trailer", "YouTube", "Trailer", true, null),
             reviews =
                 listOf(
-                    Review("r1", "Jane Doe", null, 9.0, "Loved every minute.", reviewDate, null),
-                    Review("r2", "moviebuff", null, null, "Not for me.", null, null),
+                    Review("r1", "Jane Doe", null, 9.0, "Loved every minute.", reviewDate),
+                    Review("r2", "moviebuff", null, null, "Not for me.", null),
                 ),
             totalReviews = 12,
         )

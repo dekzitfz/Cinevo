@@ -8,7 +8,7 @@ import com.app.cinevo.core.network.ApiError
 import com.app.cinevo.core.network.ApiException
 import com.app.cinevo.data.paging.MoviePagingSource
 import com.app.cinevo.data.remote.dto.MovieDto
-import com.app.cinevo.data.remote.dto.PagedMovieResponseDto
+import com.app.cinevo.data.remote.dto.PagedResponseDto
 import com.app.cinevo.domain.model.Movie
 import com.app.cinevo.domain.usecase.GetMoviesByGenreUseCase
 import com.app.cinevo.testutil.MainDispatcherRule
@@ -38,7 +38,7 @@ class MovieListViewModelTest {
             Movie(603, "The Matrix", null, null, 8.2, "1999-03-31"),
         )
     private val page =
-        PagedMovieResponseDto(
+        PagedResponseDto(
             page = 1,
             results =
                 movies.map {

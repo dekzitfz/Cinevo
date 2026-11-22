@@ -38,5 +38,4 @@ data class Review(
     val rating: Double?,
     val content: String,
     val createdAt: Instant?,
-    val url: String?,
 )

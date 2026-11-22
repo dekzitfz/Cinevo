@@ -50,7 +50,6 @@ fun ReviewDto.toDomain(): Review =
         rating = authorDetails?.rating,
         content = content,
         createdAt = createdAt.parseOrNull(Instant::parse),
-        url = url.nullIfBlank(),
     )
 
 /**

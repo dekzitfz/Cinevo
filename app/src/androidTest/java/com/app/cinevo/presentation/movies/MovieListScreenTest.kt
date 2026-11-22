@@ -16,7 +16,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.app.cinevo.R
 import com.app.cinevo.data.paging.MoviePagingSource
 import com.app.cinevo.data.remote.dto.MovieDto
-import com.app.cinevo.data.remote.dto.PagedMovieResponseDto
+import com.app.cinevo.data.remote.dto.PagedResponseDto
 import com.app.cinevo.presentation.theme.CinevoTheme
 import kotlinx.coroutines.awaitCancellation
 import okhttp3.ResponseBody.Companion.toResponseBody
@@ -122,7 +122,7 @@ class MovieListScreenTest {
         composeRule.onNodeWithText(string(R.string.movies_load_more_error)).assertDoesNotExist()
     }
 
-    private fun setContent(fetchPage: suspend (page: Int) -> PagedMovieResponseDto) {
+    private fun setContent(fetchPage: suspend (page: Int) -> PagedResponseDto<MovieDto>) {
         val movies =
             Pager(
                 PagingConfig(pageSize = 20, enablePlaceholders = false),
@@ -143,7 +143,7 @@ class MovieListScreenTest {
         page: Int,
         totalPages: Int,
         vararg ids: Int,
-    ) = PagedMovieResponseDto(
+    ) = PagedResponseDto(
         page = page,
         results = ids.map { MovieDto(id = it, title = "Movie $it") },
         totalPages = totalPages,

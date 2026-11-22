@@ -5,6 +5,7 @@ import com.app.cinevo.core.network.ApiResult
 import com.app.cinevo.domain.model.Genre
 import com.app.cinevo.domain.model.Movie
 import com.app.cinevo.domain.model.MovieDetail
+import com.app.cinevo.domain.model.Review
 import kotlinx.coroutines.flow.Flow
 
 interface MovieRepository {
@@ -17,4 +18,7 @@ interface MovieRepository {
 
     /** Details with the trailer and the first reviews. */
     suspend fun getMovieDetail(movieId: Int): ApiResult<MovieDetail>
+
+    /** All reviews of a movie. Failed loads carry an `ApiException`. */
+    fun getMovieReviews(movieId: Int): Flow<PagingData<Review>>
 }

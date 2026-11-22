@@ -6,7 +6,8 @@ import androidx.paging.PagingSource.LoadResult
 import androidx.paging.PagingState
 import com.app.cinevo.core.network.ApiError
 import com.app.cinevo.core.network.ApiException
-import com.app.cinevo.data.remote.dto.PagedMovieResponseDto
+import com.app.cinevo.data.remote.dto.MovieDto
+import com.app.cinevo.data.remote.dto.PagedResponseDto
 import com.app.cinevo.di.NetworkModule
 import com.app.cinevo.domain.model.Movie
 import kotlinx.coroutines.test.runTest
@@ -28,7 +29,7 @@ class MoviePagingSourceTest {
     private fun source(body: (page: Int) -> String) =
         MoviePagingSource { page ->
             requestedPages += page
-            json.decodeFromString<PagedMovieResponseDto>(body(page))
+            json.decodeFromString<PagedResponseDto<MovieDto>>(body(page))
         }
 
     private fun failingSource(exception: Exception) = MoviePagingSource { throw exception }

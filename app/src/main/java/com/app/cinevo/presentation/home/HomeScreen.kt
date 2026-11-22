@@ -78,24 +78,18 @@ fun HomeScreen(
         LazyVerticalGrid(
             columns = GridCells.Fixed(2),
             modifier = Modifier.fillMaxSize(),
-            // Scaffold padding goes inside the scrollable area so content can scroll behind the system bars.
+            // Scaffold padding goes inside the scrollable area so content can scroll behind the system bars. The
+            // first section title adds its own top padding, which together with this matches the side margins.
             contentPadding =
                 PaddingValues(
                     start = innerPadding.calculateStartPadding(layoutDirection) + spacing.md,
-                    top = innerPadding.calculateTopPadding() + spacing.md,
+                    top = innerPadding.calculateTopPadding() + spacing.xs,
                     end = innerPadding.calculateEndPadding(layoutDirection) + spacing.md,
                     bottom = innerPadding.calculateBottomPadding() + spacing.md,
                 ),
             horizontalArrangement = Arrangement.spacedBy(spacing.sm),
             verticalArrangement = Arrangement.spacedBy(spacing.sm),
         ) {
-            fullWidthItem(key = "header") {
-                Text(
-                    text = stringResource(R.string.home_header),
-                    style = MaterialTheme.typography.headlineSmall,
-                    color = MaterialTheme.colorScheme.onBackground,
-                )
-            }
             if (uiState.trending != SectionUiState.Empty) {
                 fullWidthItem(key = "trendingTitle") { SectionTitle(text = R.string.trending_title) }
                 fullWidthItem(key = "trending") {

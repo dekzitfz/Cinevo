@@ -53,7 +53,6 @@ class HomeScreenTest {
     fun success_showsBothSectionsAndRatings() {
         setContent(HomeUiState(SectionUiState.Success(movies), SectionUiState.Success(genres)))
 
-        composeRule.onNodeWithText(string(R.string.home_header)).assertIsDisplayed()
         composeRule.onNodeWithText(string(R.string.trending_title)).assertIsDisplayed()
         composeRule.onNodeWithText("Fight Club").assertIsDisplayed()
         composeRule.onNodeWithText(composeRule.activity.getString(R.string.movie_rating, 8.4)).assertIsDisplayed()

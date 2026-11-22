@@ -2,7 +2,6 @@
     <string name="app_name">Cinevo</string>
     <string name="navigate_up">Navigate up</string>
     <string name="retry">Retry</string>
-    <string name="home_header">What do you feel like watching?</string>
     <string name="trending_title">Trending this week</string>
     <string name="trending_loading">Loading trending movies</string>
     <string name="genres_title">Browse by genre</string>
@@ -23,7 +22,10 @@
     <string name="reviews_title">Reviews</string>
     <string name="reviews_empty">No reviews yet</string>
     <string name="reviews_see_all">See all reviews (%1$d)</string>
-    <string name="reviews_placeholder">All reviews for %1$s</string>
+    <string name="reviews_loading">Loading reviews</string>
+    <string name="reviews_load_more_error">Couldn\'t load more reviews.</string>
+    <string name="reviews_read_more">Read more</string>
+    <string name="reviews_show_less">Show less</string>
     <string name="error_no_connection">No internet connection. Check your connection and try again.</string>
     <string name="error_server">TMDB is having trouble right now. Please try again in a moment.</string>
     <string name="error_unauthorized">Couldn\'t sign in to TMDB. Check that your API key is valid.</string>

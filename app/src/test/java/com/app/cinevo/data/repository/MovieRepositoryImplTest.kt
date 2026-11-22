@@ -249,6 +249,41 @@ class MovieRepositoryImplTest {
     @Test
     fun `movie detail unreachable server returns Network error`() = assertNoNetwork { repository.getMovieDetail(550) }
 
+    @Test
+    fun `movie reviews request the movie's reviews page by page and map them`() =
+        runTest {
+            server.enqueue(MockResponse(body = reviewsPage(page = 1, totalPages = 2, id = "r1")))
+            server.enqueue(MockResponse(body = reviewsPage(page = 2, totalPages = 2, id = "r2")))
+
+            val reviews = repository.getMovieReviews(movieId = 550).asSnapshot { appendScrollWhile { true } }
+
+            assertEquals(listOf("r1", "r2"), reviews.map { it.id })
+            assertEquals("Author r1", reviews.first().author)
+            assertEquals(2, server.requestCount)
+            listOf("1", "2").forEach { page ->
+                val url = server.takeRequest().url
+                assertEquals("/movie/550/reviews", url.encodedPath)
+                assertEquals(page, url.queryParameter("page"))
+            }
+        }
+
+    @Test
+    fun `movie reviews 404 fails with a typed Http error`() =
+        runTest {
+            server.enqueue(MockResponse(code = 404, body = """{"status_message":"Not found"}"""))
+
+            val error = runCatching { repository.getMovieReviews(movieId = 550).asSnapshot() }.exceptionOrNull()
+
+            assertEquals(ApiError.Http(404), (error as ApiException).error)
+        }
+
+    private fun reviewsPage(
+        page: Int,
+        totalPages: Int,
+        id: String,
+    ) = """{"id":550,"page":$page,"results":[{"id":"$id","author":"Author $id","content":"Text"}],""" +
+        """"total_pages":$totalPages,"total_results":2}"""
+
     private fun discoverPage(
         page: Int,
         totalPages: Int,
